@@ -1,4 +1,5 @@
 require("dotenv").config();
+const db = require("./db")
 
 const morgan = require("morgan");
 
@@ -15,38 +16,61 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 // Get all restaurants
-app.get("/api/v1/restaurants", (req, res) => {
-    console.log("Route handler ran");
-    res.json({
-        status: "success",
-        data: {
-            restaurant: ["Tottis", "Wendys"],
-        },
-    });
+app.get("/api/v1/restaurants", async (req, res) => {
+    try {
+        const results = await db.query('SELECT * from restaurants');
+        console.log(results);
+        res.json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                restaurant: results.rows,
+            },
+        });
+    } catch(err) {
+        console.log("error");
+    }
+
+
 });
 
 // Get restaurant by id
-app.get("/api/v1/restaurants/:id", (req, res) => {
-    console.log(req.params);
-    res.status(200).json ({
-        status: "success",
-        data: {
-            restaurant: "mcdonalds"
-        }
+app.get("/api/v1/restaurants/:id", async (req, res) => {
+    console.log(req.params.id);
 
-    });
+    try {
+        const results = await db.query("SELECT * from restaurants WHERE id= $1", [req.params.id]);
+        console.log(results.rows[0]);
+        res.status(200).json ({
+            status: "success",
+            data: {
+                restaurant: results.rows[0]
+            }
+    
+        });
+    } catch (err) {
+        console.log(err);
+    }
+
 });
 
 // Create restaurant
-app.post("/api/v1/restaurants/", (req, res) => {
+app.post("/api/v1/restaurants/", async (req, res) => {
     console.log(req.body);
-    res.status(201).json ({
-        status: "success",
-        data: {
-            restaurant: "mcdonalds"
-        }
+    try {
+        const results = await db.query("INSERT INTO restaurants (name, location, price_range) values ($1, $2, $3) returning *", [req.body.name, req.body.location, req.body.price_range]);
+        res.status(201).json ({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                restaurant: results.rows[0],
+            }
+    
+        }); 
+    } catch (err) {
+        console.log(err);
+    }
 
-    });
 })
 
 // Update restaurant info
