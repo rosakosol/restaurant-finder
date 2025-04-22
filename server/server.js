@@ -6,10 +6,12 @@ const morgan = require("morgan");
 // Creates express instance
 const express = require("express")
 
+const cors = require("cors")
+
 // Stores instance in app
 const app = express()
 
-
+app.use(cors());
 app.use(express.json());
 
 // Express middleware
@@ -24,7 +26,7 @@ app.get("/api/v1/restaurants", async (req, res) => {
             status: "success",
             results: results.rows.length,
             data: {
-                restaurant: results.rows,
+                restaurants: results.rows,
             },
         });
     } catch(err) {
@@ -44,7 +46,7 @@ app.get("/api/v1/restaurants/:id", async (req, res) => {
         res.status(200).json ({
             status: "success",
             data: {
-                restaurant: results.rows[0]
+                restaurants: results.rows[0]
             }
     
         });
@@ -62,7 +64,7 @@ app.post("/api/v1/restaurants/", async (req, res) => {
             status: "success",
             results: results.rows.length,
             data: {
-                restaurant: results.rows[0],
+                restaurants: results.rows[0],
             }
     
         }); 
@@ -80,7 +82,7 @@ app.put("/api/v1/restaurants/:id", async (req, res) => {
         res.status(200).json ({
             status: "success",
             data: {
-                restaurant: results.rows[0]
+                restaurants: results.rows[0]
             }
     
         });
