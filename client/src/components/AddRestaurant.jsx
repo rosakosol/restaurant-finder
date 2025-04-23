@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import RestaurantFinder from '../apis/RestaurantFinder'
+import { RestaurantsContext } from '../context/RestaurantsContext'
 
 const AddRestaurant = () => {
+    const {addRestaurants} = useContext(RestaurantsContext);
     const [name, setName] = useState("")
     const [location, setLocation] = useState("")
     const [priceRange, setPriceRange] = useState("Price Range")
@@ -12,7 +14,10 @@ const AddRestaurant = () => {
                 name,
                 location,
                 price_range: priceRange
-            })
+            });
+            
+            addRestaurants(response.data.data.restaurants);
+
             console.log(response);
         } catch (err) {
 
