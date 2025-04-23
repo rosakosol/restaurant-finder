@@ -1,9 +1,11 @@
 import React, {useContext, useEffect} from 'react'
 import RestaurantFinder from '../apis/RestaurantFinder'
 import { RestaurantsContext } from '../context/RestaurantsContext'
+import { useNavigate } from 'react-router-dom';
 
 const RestaurantList = (props) => {
-    const {restaurants, setRestaurants} = useContext(RestaurantsContext)
+    const {restaurants, setRestaurants} = useContext(RestaurantsContext);
+    const navigate = useNavigate();
 
     useEffect( () => {
         const fetchData = async () => {
@@ -18,8 +20,16 @@ const RestaurantList = (props) => {
         fetchData();
     },[])
 
-    const handleUpdate = () => {
-        console.log("")
+    const handleUpdate = (id) => {
+        navigate(`/restaurants/${id}/update`);
+
+        
+        // try {
+
+            
+        // } catch (err) {
+
+        // }
     };
 
     const handleDelete = async (id) => {
@@ -29,7 +39,7 @@ const RestaurantList = (props) => {
                 return restaurant.id !== id
             }))
         } catch (err) {
-
+            console.log(err)
         }
     }
 
