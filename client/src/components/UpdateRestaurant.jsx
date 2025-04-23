@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { RestaurantsContext } from '../context/RestaurantsContext'
 import RestaurantFinder from '../apis/RestaurantFinder'
 
@@ -10,6 +10,7 @@ const UpdateRestaurant = (props) => {
     const [location, setLocation] = useState("");
     const [priceRange, setPriceRange] = useState("");
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
       const fetchData = async () => {
@@ -37,6 +38,17 @@ const UpdateRestaurant = (props) => {
     if (loading) return <div>Loading...</div>
     
 
+    const handleSubmit = async (e) => {
+      e.preventDefault()
+
+      const updatedRestaurant = await RestaurantFinder.put(`/${id}`, {
+        name,
+        location,
+        price_range: priceRange,
+      });
+      navigate(`/`)
+    } 
+
   return (
     <div>
       <h1>{name}</h1>
@@ -54,7 +66,7 @@ const UpdateRestaurant = (props) => {
             <label className="form-label" htmlFor="price_range">Price Range</label>
             <input value={priceRange} onChange={e => setPriceRange(e.target.value)} id="price_range" className="form-control" type="number" />
         </div>
-        <button className="btn btn-primary">Submit</button>
+        <button type="submit" onClick={handleSubmit} className="btn btn-primary">Submit</button>
       </form>
     </div>
   )
