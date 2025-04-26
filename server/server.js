@@ -1,48 +1,56 @@
+// Load environment variables
 require("dotenv").config();
+
+// Import database config
 const db = require("./db")
 
+
+// Import Morgan middleware that logs HTTP requests
 const morgan = require("morgan");
 
-// Creates express instance
+// Import Express library
 const express = require("express")
 
+// Import CORS (Cross-Origin Resource Sharing) middleware
+// allows us to run client app on localhost:3000 and server on different port
 const cors = require("cors")
 
-// Stores instance in app
+// Create Express instance
 const app = express()
 
+// Tells Express to use CORS for all incoming requests (accepts React frontend)
 app.use(cors());
+
+// Adds middleware that parses incoming request bodies as JSON
 app.use(express.json());
 
-// Express middleware
+// Use Morgan middleware in dev mode
 app.use(morgan("dev"));
 
 // Get all restaurants
 app.get("/api/v1/restaurants", async (req, res) => {
     try {
-        const results = await db.query('SELECT * from restaurants');
-        console.log(results);
+        const restaurants = await db.query(
+            "SELECT * from restaurants left join (select restaurant_id, COUNT(*), TRUNC(AVG(rating), 1) as average_rating from reviews group by restaurant_id) reviews on restaurants.id = reviews.restaurant_id"
+        );
         res.json({
             status: "success",
-            results: results.rows.length,
+            results: restaurants.rows.length,
             data: {
-                restaurants: results.rows,
+                restaurants: restaurants.rows,
             },
         });
     } catch(err) {
         console.log("error");
     }
-
-
 });
 
 // Get restaurant by id
 app.get("/api/v1/restaurants/:id", async (req, res) => {
-    console.log(req.params.id);
-
     try {
         // Get restaurant details
-        const restaurant = await db.query("SELECT * from restaurants WHERE id= $1", [req.params.id]);
+        const restaurant = await db.query("SELECT * from restaurants left join (select restaurant_id, COUNT(*), TRUNC(AVG(rating), 1) as average_rating from reviews group by restaurant_id) reviews on restaurants.id = reviews.restaurant_id WHERE id= $1", [req.params.id]);
+        console.log(restaurant);
 
         // Get reviews
         const reviews = await db.query("SELECT * from reviews WHERE restaurant_id= $1", [req.params.id]);
@@ -54,8 +62,6 @@ app.get("/api/v1/restaurants/:id", async (req, res) => {
                 reviews: reviews.rows
             }
         });
-
-
     } catch (err) {
         console.log(err);
     }
