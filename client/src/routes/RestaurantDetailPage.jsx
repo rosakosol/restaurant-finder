@@ -30,6 +30,12 @@ const RestaurantDetailPage = () => {
     <div>
       <h1>{selectedRestaurant && (
         <>
+          <h1>{selectedRestaurant?.restaurant?.name}</h1>
+          <div className="d-flex">
+            <StarRating rating={selectedRestaurant.restaurant.average_rating}/>
+            <p>({selectedRestaurant?.restaurant?.count})</p>
+          </div>
+
           <div className="mt-3">
             <Reviews reviews={selectedRestaurant.reviews} />
             <AddReview />
