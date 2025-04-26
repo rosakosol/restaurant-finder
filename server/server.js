@@ -41,15 +41,21 @@ app.get("/api/v1/restaurants/:id", async (req, res) => {
     console.log(req.params.id);
 
     try {
-        const results = await db.query("SELECT * from restaurants WHERE id= $1", [req.params.id]);
-        console.log(results.rows[0]);
+        // Get restaurant details
+        const restaurant = await db.query("SELECT * from restaurants WHERE id= $1", [req.params.id]);
+
+        // Get reviews
+        const reviews = await db.query("SELECT * from reviews WHERE restaurant_id= $1", [req.params.id]);
+
         res.status(200).json ({
             status: "success",
             data: {
-                restaurants: results.rows[0]
+                restaurant: restaurant.rows[0],
+                reviews: reviews.rows
             }
-    
         });
+
+
     } catch (err) {
         console.log(err);
     }
@@ -101,7 +107,6 @@ app.delete("/api/v1/restaurants/:id", async (req, res) => {
     } catch (err) {
         console.log(err);
     }    
-
 });
 
 // Store port in const from env variable
