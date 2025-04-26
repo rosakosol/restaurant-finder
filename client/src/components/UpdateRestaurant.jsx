@@ -16,7 +16,8 @@ const UpdateRestaurant = (props) => {
       const fetchData = async () => {
         try {
           const response = await RestaurantFinder.get(`/${id}`)
-          const restaurant = response.data?.data?.restaurants;
+          const restaurant = response.data?.data?.restaurant;
+          console.log(restaurant);
     
           if (restaurant) {
             setName(restaurant.name);
