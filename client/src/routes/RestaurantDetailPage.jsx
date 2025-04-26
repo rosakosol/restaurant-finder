@@ -14,6 +14,8 @@ const RestaurantDetailPage = () => {
       const fetchData = async () => {
         try {
           const response = await RestaurantFinder.get(`/${id}`);
+
+          console.log(response.data.data);
           setSelectedRestaurant(response.data.data)
         }
         catch (err) {
@@ -26,19 +28,14 @@ const RestaurantDetailPage = () => {
 
   return (
     <div>
-      <div>{selectedRestaurant && (
+      <h1>{selectedRestaurant && (
         <>
-          <h1>{selectedRestaurant?.restaurant?.name}</h1>
-          <div className="d-flex align-items-center">          
-            <StarRating rating={selectedRestaurant?.restaurant?.average_rating}/>
-            <p className="ms-2 mb-0">({selectedRestaurant?.restaurant?.count})</p>
-          </div>
           <div className="mt-3">
             <Reviews reviews={selectedRestaurant.reviews} />
             <AddReview />
           </div>
         </>
-      )}</div>
+      )}</h1>
 
     </div>
   )
